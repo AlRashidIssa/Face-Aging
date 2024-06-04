@@ -1,7 +1,6 @@
-from typing import Tuple, List
+from typing import Tuple
 import numpy as np
 import matplotlib.pyplot as plt
-
 from model import GANModel
 
 class TrainModel(GANModel):
@@ -77,5 +76,3 @@ class TrainModel(GANModel):
                 axs[i, j].axis('off')
                 cnt += 1
         plt.show()
-
-
