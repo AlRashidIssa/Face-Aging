@@ -8,6 +8,9 @@ input_shape = (100,)
 epochs = 10000
 batch_size = 32
 
+
+
+
 # Example Usage
 if __name__ == "__main__":
     # Path to the directory containing images
