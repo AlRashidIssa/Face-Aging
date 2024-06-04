@@ -5,7 +5,7 @@ from pr_process import PrProcess
 # Example Usage
 if __name__ == "__main__":
     # Load and preprocess dataset
-    (X_train, _), (_, _) = PrProcess() # type: ignor
+    (X_train, _), (_, _) = PrProcess() # type: ignore
     X_train = (X_train - 127.5) / 127.5  # Normalize to [-1, 1]
     X_train = np.expand_dims(X_train, axis=-1)
 
