@@ -3,9 +3,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from model import GANModel
 
+# Suppress the specific warning
+import warnings
+warnings.simplefilter('ignore')
+
 class TrainModel(GANModel):
     """
     Class to train the GAN model.
+
+    Attributes:
+        input_shape (Tuple[int, ...]): Shape of the input noise vector for the generator.
+        epochs (int): Number of epochs to train.
+        batch_size (int): Size of each training batch.
+        x_train (np.ndarray): Training data (images).
     """
 
     def __init__(self, input_shape: Tuple[int, ...], epochs: int, batch_size: int, x_train: np.ndarray) -> None:
@@ -38,7 +48,7 @@ class TrainModel(GANModel):
             idx = np.random.randint(0, self.x_train.shape[0], self.batch_size)
             real_imgs = self.x_train[idx]
 
-            noise = np.random.normal(0, 1, (self.batch_size, self.input_shape[0]))
+            noise = np.random.normal(0, 1, (self.batch_size, 100))
             gen_imgs = self.generator_.predict(noise)
 
             d_loss_real = self.discriminator_.train_on_batch(real_imgs, valid)
@@ -46,12 +56,12 @@ class TrainModel(GANModel):
             d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
             # Train Generator
-            noise = np.random.normal(0, 1, (self.batch_size, self.input_shape[0]))
+            noise = np.random.normal(0, 1, (self.batch_size, 100))
             g_loss = self.gan_.train_on_batch(noise, valid)
 
             # Print progress
+            print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100*d_loss[1]}] [G loss: {g_loss}]")
             if epoch % sample_interval == 0:
-                print(f"{epoch} [D loss: {d_loss[0]}, acc.: {100*d_loss[1]}] [G loss: {g_loss}]")
                 self.sample_images(epoch)
 
     def sample_images(self, epoch: int) -> None:
@@ -61,8 +71,10 @@ class TrainModel(GANModel):
         Args:
             epoch (int): The current epoch number.
         """
+        import matplotlib.pyplot as plt
+
         r, c = 4, 4
-        noise = np.random.normal(0, 1, (r * c, self.input_shape[0]))
+        noise = np.random.normal(0, 1, (r * c, 100))
         gen_imgs = self.generator_.predict(noise)
 
         # Rescale images from [-1, 1] to [0, 1]
@@ -76,3 +88,13 @@ class TrainModel(GANModel):
                 axs[i, j].axis('off')
                 cnt += 1
         plt.show()
+
+    def save(self, file_path: str) -> None:
+        """
+        Save the GAN model to the specified file path.
+
+        Args:
+            file_path (str): Path to save the model.
+        """
+        self.gan_.save(file_path)
+        print(f"Model saved to {file_path}")

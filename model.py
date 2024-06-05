@@ -1,90 +1,105 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers, Model # type: ignore
-from tensorflow.keras.optimizers import Adam # type: ignore
+from tensorflow.keras import layers, Model
+from tensorflow.keras.optimizers import Adam
 from typing import Tuple
+
+# Suppress the specific warning
+import warnings
+warnings.simplefilter('ignore')
 
 class GANModel:
     """
-    Class to define and handle the components of a Generative Adversarial Network (GAN).
-    This GAN consists of a Generator and a Discriminator.
+    A class representing a Generative Adversarial Network (GAN).
+
+    This class includes a Generator and a Discriminator.
+
+    Attributes:
+        input_shape (Tuple[int, int, int]): Shape of the input images for the generator.
     """
 
-    def __init__(self, input_shape: Tuple[int, ...]) -> None:
+    def __init__(self, input_shape: Tuple[int, int, int]) -> None:
         """
-        Initialize the GAN model with the specified input shape.
+        Initializes the GAN model.
 
         Args:
-            input_shape (Tuple[int, ...]): Shape of the input noise vector for the generator.
+            input_shape (Tuple[int, int, int]): Shape of the input images for the generator.
         """
         self.input_shape = input_shape
 
         # Initialize the models
-        self.discriminator_ = self.discriminator()
-        self.generator_ = self.generator()
-        self.gan_ = self.gan()
+        self.discriminator_ = self.build_discriminator()
+        self.generator_ = self.build_generator()
+        self.gan_ = self.build_gan()
 
         # Compile the models
         self.compile_models()
 
-    def generator(self) -> Model:
-        """
-        Build the Generator model.
-        The Generator takes a noise vector and transforms it into an image.
+    def build_generator(self) -> Model:
+            """
+            Builds the Generator model.
 
-        Returns:
-            model (tf.keras.Model): The Generator model.
-        """
-        model = tf.keras.Sequential([
-            layers.Dense(7*7*256, use_bias=False, input_shape=self.input_shape),
-            layers.BatchNormalization(),
-            layers.LeakyReLU(),
+            The Generator takes a noise vector and transforms it into an image.
 
-            layers.Reshape((7, 7, 256)),
+            Returns:
+            tf.keras.Model: The Generator model.
+            """
+            model = tf.keras.Sequential()
+            model.add(layers.Input(shape=(100,)))
+            model.add(layers.Dense(16*16*512, use_bias=False))
+            model.add(layers.BatchNormalization())
+            model.add(layers.LeakyReLU())
 
-            layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False),
-            layers.BatchNormalization(),
-            layers.LeakyReLU(),
+            model.add(layers.Reshape((16, 16, 512)))
+            model.add(layers.Conv2DTranspose(256, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+            model.add(layers.BatchNormalization())
+            model.add(layers.LeakyReLU())
 
-            layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False),
-            layers.BatchNormalization(),
-            layers.LeakyReLU(),
+            model.add(layers.Conv2DTranspose(128, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+            model.add(layers.BatchNormalization())
+            model.add(layers.LeakyReLU())
 
-            layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh')
-        ])
+            model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+            model.add(layers.BatchNormalization())
+            model.add(layers.LeakyReLU())
+            
+            model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+            model.add(layers.Reshape((256, 256, 1)))  # Resize to match discriminator input shape
 
-        return model
+            return model
     
-    def discriminator(self) -> Model:
+    def build_discriminator(self) -> Model:
         """
-        Build the Discriminator model.
+        Builds the Discriminator model.
+
         The Discriminator classifies whether an image is real or fake.
 
         Returns:
-            model (tf.keras.Model): The Discriminator model.
+            tf.keras.Model: The Discriminator model.
         """
-        model = tf.keras.Sequential([
-            layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[28, 28, 1]),
-            layers.LeakyReLU(),
-            layers.Dropout(0.3),
+        model = tf.keras.Sequential()
+        model.add(layers.Input(shape=self.input_shape))
+        model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same'))
+        model.add(layers.LeakyReLU())
+        model.add(layers.Dropout(0.3))
 
-            layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'),
-            layers.LeakyReLU(),
-            layers.Dropout(0.3),
+        model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+        model.add(layers.LeakyReLU())
+        model.add(layers.Dropout(0.3))
 
-            layers.Flatten(),
-            layers.Dense(1, activation='sigmoid')
-        ])
+        model.add(layers.Flatten())
+        model.add(layers.Dense(1))
 
         return model
 
-    def gan(self) -> Model:
+    def build_gan(self) -> Model:
         """
-        Build the GAN model by combining the Generator and Discriminator.
+        Builds the GAN model.
+
         The GAN takes noise as input, generates an image, and then classifies it using the Discriminator.
 
         Returns:
-            model (tf.keras.Model): The combined GAN model.
+            tf.keras.Model: The combined GAN model.
         """
         model = tf.keras.Sequential()
         model.add(self.generator_)
@@ -94,7 +109,7 @@ class GANModel:
 
     def compile_models(self) -> None:
         """
-        Compile the Discriminator and GAN models with appropriate loss functions and optimizers.
+        Compiles the Discriminator and GAN models with appropriate loss functions and optimizers.
         """
         optimizer = Adam(0.0002, 0.5)
 

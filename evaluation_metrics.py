@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_recall_curve
+from sklearn.metrics import accuracy_score, f1_score, recall_score
 from prediction import Prediction
 
 class EvaluationMetrics(Prediction):
@@ -68,15 +68,3 @@ class EvaluationMetrics(Prediction):
         """
         return recall_score(y_true, y_pred)
 
-    def precision_recall_curve(self, y_true: np.ndarray, y_pred: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Compute the precision-recall curve of the model predictions.
-
-        Args:
-            y_true (np.ndarray): True labels.
-            y_pred (np.ndarray): Predicted labels.
-
-        Returns:
-            Tuple[np.ndarray, np.ndarray, np.ndarray]: Precision, recall, and threshold arrays.
-        """
-        return precision_recall_curve(y_true, y_pred)

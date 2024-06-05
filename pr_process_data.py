@@ -1,34 +1,39 @@
 import tensorflow as tf
 import numpy as np
+from typing import Tuple
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-from typing import Tuple, List
-from tensorflow.keras.preprocessing.image import ImageDataGenerator # type: ignore
+# Suppress the specific warning
+import warnings
+warnings.simplefilter('ignore')
 
 class ImageProcessor:
     """
     Class for processing and augmenting images using TensorFlow.
 
-    Atrebutes:
-            augmentation_params (dict): Dictionary of augmentation parameters for ImageDataGenerator.
-
-            images (np.ndarray): Array of images to preprocess.
-
-            batch_size (int): Size of batches.
+    Attributes:
+        augmentation_params (dict): Dictionary of augmentation parameters for ImageDataGenerator.
+        images (np.ndarray): Array of images to preprocess.
+        batch_size (int): Size of batches.
     Methods:
-        __init__(self, augmentiation_params: dict):
-            Initialize all atrebutes and methodes.
+        __init__(self, augmentation_params: dict, images: np.ndarray, batch_size: int):
+            Initialize the ImageProcessor with augmentation parameters, images, and batch size.
         
-        preprocess_image(self, images: np.ndarray) -> np.ndarray:
-            for appling scaling for image make the reange between (0,1)
+        preprocess_images(self) -> np.ndarray:
+            Apply scaling to images to make the range between (0, 1).
         
-        augment_images(self): -> tf.data.Dataset:
-            Augment images using ImageDataGenerator.
-
+        augment_images(self) -> tf.data.Dataset:
+            Augment images using ImageDataGenerator and return a TensorFlow dataset.
     """
 
     def __init__(self, augmentation_params: dict, images: np.ndarray, batch_size: int) -> None:
         """
-        Initialize the image procesor with augmentation parameters.
+        Initialize the image processor with augmentation parameters, images, and batch size.
+
+        Args:
+            augmentation_params (dict): Dictionary of augmentation parameters for ImageDataGenerator.
+            images (np.ndarray): Array of images to preprocess and augment.
+            batch_size (int): Size of batches for augmentation.
         """
         self.datagen = ImageDataGenerator(**augmentation_params)
         self.images = images
@@ -36,29 +41,27 @@ class ImageProcessor:
 
     def preprocess_images(self) -> np.ndarray:
         """
-        Preprocess the image by scaling them between 0 and 1.
+        Preprocess the images by scaling them between 0 and 1.
 
-        Args:
-            self.images (np.ndarray)
-
-        Return:
-            np.ndarray(): Preprocessed images.
+        Returns:
+            np.ndarray: Preprocessed images.
         """
-
         return self.images / 255.0
     
     def augment_images(self) -> tf.data.Dataset:
         """
         Augment images using ImageDataGenerator.
 
-        Args:
-            self.images (np.ndarray): Array of images to augment.
-            self.batch_size (int): Size of batches.
-
         Returns:
             tf.data.Dataset: Dataset of augmented images.
         """
+        # Create a generator that yields individual images
+        def data_generator():
+            for batch in self.datagen.flow(self.images, batch_size=self.batch_size):
+                for img in batch:
+                    yield img
+
         return tf.data.Dataset.from_generator(
-            lambda: self.datagen.flow(self.images, batch_size=self.batch_size),
+            data_generator,
             output_signature=tf.TensorSpec(shape=self.images.shape[1:], dtype=tf.float32)
         )

@@ -13,13 +13,14 @@ def generate():
     # Get the image and prediction number from the form
     image = request.form.get('image')
     prediction_number = int(request.form.get('prediction_number'))
+    
 
     # Preprocess the image
     image_processor = ImageProcessor()
     image_processed = image_processor.preprocess_images(image)
 
     # Make prediction with the specified number
-    prediction_model = Prediction()
+    prediction_model = Prediction(train_model="/workspaces/Face-Aging/trainned_model/test.h5")
     new_image = prediction_model.predict(image_processed, prediction_number)
 
     return render_template('result.html', script=new_image)

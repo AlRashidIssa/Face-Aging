@@ -26,10 +26,3 @@ if __name__ == "__main__":
     recall = eval_metrics.recall_score(y_true, y_pred)
     print("Recall Score:", recall)
 
-    # Compute precision-recall curve
-    precision, recall, thresholds = eval_metrics.precision_recall_curve(y_true, y_pred)
-
-    # Print precision, recall, and thresholds
-    print("Precision:", precision)
-    print("Recall:", recall)
-    print("Thresholds:", thresholds)
