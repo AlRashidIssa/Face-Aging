@@ -1,6 +1,3 @@
-Sure, here's a markdown file for GitHub:
-
-```markdown
 # Project Title
 
 ## Overview
