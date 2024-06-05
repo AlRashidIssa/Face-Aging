@@ -62,6 +62,18 @@ trainer.train(sample_interval=200)
 trainer.save("version.h5")
 ```
 
+### 3.2 Train Model CLI
+
+This component allows training the GAN model through a Command-Line Interface (CLI) with support for both GPU and TPU acceleration.
+
+#### Usage
+
+To train the GAN model using the CLI, execute the following command:
+
+```bash
+python training_CLI.py --input_shape 256 256 1 --epochs 1000 --batch_size 1 --main_directory "path/to/your/images"
+
+
 ### 4. Prediction
 
 This component makes predictions using the trained model.
@@ -76,10 +88,6 @@ predictor = Prediction(image=example_image, train_model=trained_model_path)
 generated_image = predictor.predict()
 ```
 
-## Contributors
-
-- [Contributor 1](link-to-contributor1)
-- [Contributor 2](link-to-contributor2)
 
 ## License
 
