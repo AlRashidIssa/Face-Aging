@@ -29,7 +29,7 @@ def train_model(input_shape, epochs, batch_size, main_directory, accelerator=Non
 
     # Initialize and use the IngestData class to load and preprocess images
     data_ingestor = IngestData(path=main_directory, max_images=20000, target_size=input_shape[:2])
-    images = data_ingestor.load_images()
+    images = data_ingestor.get_images()
 
     # Initialize ImageProcessor with augmentation parameters and loaded images
     data_processor = ImageProcessor(augmentation_params=augmentation_params, images=images, batch_size=batch_size)
