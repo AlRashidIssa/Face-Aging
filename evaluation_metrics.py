@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from sklearn.metrics import accuracy_score, f1_score, recall_score
+from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_recall_curve
 from prediction import Prediction
 
 class EvaluationMetrics(Prediction):
