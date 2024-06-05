@@ -92,5 +92,3 @@ generated_image = predictor.predict()
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ```
-
-Replace the placeholders such as `Project Title`, `Overview`, `Usage`, `Contributors`, `License`, etc., with appropriate content specific to your project. Additionally, provide links to the contributors' profiles and update the license information accordingly.
