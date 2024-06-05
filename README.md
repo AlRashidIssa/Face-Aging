@@ -71,7 +71,7 @@ This component allows training the GAN model through a Command-Line Interface (C
 To train the GAN model using the CLI, execute the following command:
 
 ```bash
-python training_CLI.py --input_shape 256 256 1 --epochs 1000 --batch_size 1 --main_directory "path/to/your/images"
+python traning_CLI.py --input_shape 256 256 1 --epochs 1000 --batch_size 1 --main_directory "path/to/your/images"
 ```
 
 ### 4. Prediction
