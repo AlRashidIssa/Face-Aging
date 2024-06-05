@@ -1,6 +1,6 @@
 import numpy as np
-from train_model import TrainModel
-from pr_process_data import ImageProcessor
+from model_utils import TrainModel
+from image_processor import ImageProcessor
 from ingest_data import IngestData
 
 import os

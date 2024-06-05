@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from pr_process_data import ImageProcessor
+from image_processor import ImageProcessor
 from prediction import Prediction
 
 app = Flask(__name__)
